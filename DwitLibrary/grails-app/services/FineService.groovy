@@ -13,12 +13,12 @@ class FineService {
         return rDate-bDate
     }
 
-    def calculatefine(List<Borrow> borrow){
+    def calculatefine(Borrow borrow){
         Fine fine = new Fine()
 
-        def member = borrow[0].member
-        def book = borrow[0].book
-        def bDate = borrow[0].borrowedDate
+        def member = borrow.member
+        def book = borrow.book
+        def bDate = borrow.borrowedDate
 
         def tDays=calculateTotalDays(bDate)
 
@@ -69,7 +69,7 @@ class FineService {
 
         if(member.getAuthorities()[0].toString().equals("ROLE_LIBRARIAN")){
             if(book.bookType.equals("Borrowable")){
-                fine.days=tDays - DWITLibraryConstants.COURSE_BOOK_BORROWABLE_LIBRARIAN
+                fine.days=50 - DWITLibraryConstants.COURSE_BOOK_BORROWABLE_LIBRARIAN
                 if(fine.days>0){
                     fine.fineAmount=fine.days * DWITLibraryConstants.FINE_AMT_LIBRARIAN
                 }
@@ -82,8 +82,79 @@ class FineService {
             }
         }
 
-        fine.borrow=borrow[0]
-        fine.member=borrow[0].member
-        fine.save(flush: true)
+        fine.borrow=borrow
+        fine.member=borrow.member
+//        fine.save(flush: true)
+
+        return fine
     }
+
+    def recalculatefine(Borrow borrow,int days){
+        Fine fine = new Fine()
+
+        def member = borrow.member
+        def book = borrow.book
+        def bDate = borrow.borrowedDate
+
+        def tDays=calculateTotalDays(bDate)
+
+        if(member.getAuthorities()[0].toString().equals("ROLE_STUDENT")){
+            if(book.bookType.equals("Borrowable")){
+                if(days>0){
+                    fine.fineAmount=days * DWITLibraryConstants.FINE_AMT_STUDENT
+                }
+            }
+            else if (book.bookType.equals("Novel")){
+                if(days>0){
+                    fine.fineAmount=days * DWITLibraryConstants.FINE_AMT_STUDENT
+                }
+            }
+        }
+
+        if(member.getAuthorities()[0].toString().equals("ROLE_FACULTY")){
+            if(book.bookType.equals("Borrowable")){
+                if(days>0){
+                    fine.fineAmount=days * DWITLibraryConstants.FINE_AMT_FACULTY
+                }
+            }
+            else if (book.bookType.equals("Novel")){
+                if(days>0){
+                    fine.fineAmount=days * DWITLibraryConstants.FINE_AMT_FACULTY
+                }
+            }
+        }
+
+        if(member.getAuthorities()[0].toString().equals("ROLE_ADMIN")){
+            if(book.bookType.equals("Borrowable")){
+                if(days>0){
+                    fine.fineAmount=days * DWITLibraryConstants.FINE_AMT_ADMIN
+                }
+            }
+            else if (book.bookType.equals("Novel")){
+                if(days>0){
+                    fine.fineAmount=days * DWITLibraryConstants.FINE_AMT_ADMIN
+                }
+            }
+        }
+
+        if(member.getAuthorities()[0].toString().equals("ROLE_LIBRARIAN")){
+            if(book.bookType.equals("Borrowable")){
+                if(days>0){
+                    fine.fineAmount=days * DWITLibraryConstants.FINE_AMT_LIBRARIAN
+                }
+            }
+            else if (book.bookType.equals("Novel")){
+                if(days>0){
+                    fine.fineAmount=days * DWITLibraryConstants.FINE_AMT_LIBRARIAN
+                }
+            }
+        }
+
+        fine.borrow=borrow
+        fine.member=borrow.member
+
+        return fine
+    }
+
+
 }

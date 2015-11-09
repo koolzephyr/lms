@@ -49,17 +49,15 @@ class BookController {
             return
         }
 
-        bookInstance.availableQuantity=bookInstance.totalQuantity
         bookInstance.save flush: true
 
-        redirect(controller:'book', action:'index')
-        /*request.withFormat {
+        request.withFormat {
             form {
                 flash.message = message(code: 'default.created.message', args: [message(code: 'bookInstance.label', default: 'Book'), bookInstance.id])
                 redirect bookInstance
             }
             '*' { respond bookInstance, [status: CREATED] }
-        }*/
+        }
     }
 
     def edit(Book bookInstance) {
@@ -235,7 +233,6 @@ class BookController {
 
             }
 
-            println("ic:"+borrowCount)
             def role = borrowingUser.getAuthorities()[0].toString();
             def borrowingBook = BookInfo.findByBookNumber(params.bookNumber)
             def book = borrowingBook.book
@@ -320,7 +317,7 @@ class BookController {
     }
     @Transactional
     def checkBorrowedMember(){
-
+        def amount
         def borrowingBook = BookInfo.findByBookNumber(params.bookNumber)
         def book = borrowingBook.book
         def borrowedMember = Borrow.createCriteria().list {
@@ -332,7 +329,7 @@ class BookController {
         }
 
 
-        fineService.calculatefine(borrowedMember);
+        def fine = fineService.calculatefine(borrowedMember[0]);
         def borrowInfo = Borrow.createCriteria().list {
             and{
                 eq("book",book)
@@ -340,15 +337,17 @@ class BookController {
                 eq("returned",false)
             }
         }
-def amount
-        def fineAmt = Fine.findByBorrow(borrowInfo[0])
 
-        if(fineAmt) {
-            amount = fineAmt.fineAmount
+        def amt = fine.fineAmount
+
+        if(amt) {
+            amount = amt
         }else {
             amount = 0
         }
-        render borrowedMember[0].member.fullName +":"+amount
+
+        def totalBorrowedDays = borrowInfo[0].borrowedDate-new Date()
+        render borrowedMember[0].member.fullName +":"+amount+":"+fine.days+":"+totalBorrowedDays
     }
     @Transactional
     def saveReturn() {
@@ -357,6 +356,8 @@ def amount
         def borrowedBook = BookInfo.findByBookNumber(params.bookNumber)
         def book = borrowedBook.book
         def borrow = Borrow.findByBookAndMemberAndReturned(book,borrowingUser,false)
+
+
 
 
         if(borrowingUser){
@@ -370,9 +371,41 @@ def amount
             book.availableQuantity +=1;
             book.save()
 
+            Fine fine = new Fine()
+            fine.borrow = borrow
+            fine.fineAmount = Double.valueOf(params.fine).doubleValue()
+            fine.days = Short.valueOf(params.totalFineDays).shortValue()
+            fine.member=borrowingUser
+
+            fine.save(flush: true)
+
             render "success"
 
         }
+
+    }
+
+    def recalculateFine() {
+        def amount
+        def borrowingUser = Member.findByFullName(params.memberName)
+
+        def borrowedBook = BookInfo.findByBookNumber(params.bookNumber)
+        def book = borrowedBook.book
+        def borrow = Borrow.findByBookAndMemberAndReturned(book,borrowingUser,false)
+
+        def fine = fineService.recalculatefine(borrow,params.days as int);
+
+        def amt = fine.fineAmount
+
+        if(amt) {
+            amount = amt
+        }else {
+            amount = 0
+        }
+
+        def totalBorrowedDays = borrow.borrowedDate-new Date()
+        render borrowingUser.fullName +":"+amount+":"+params.days+":"+totalBorrowedDays
+
 
     }
 }

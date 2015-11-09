@@ -1,9 +1,59 @@
 <%@ page import="np.edu.dwit.Member" %>
+
+
+<script language="JavaScript" type="text/javascript">
+
+    function onlyAlphabets(e, t) {
+        try {
+            if (window.event) {
+                var charCode = window.event.keyCode;
+            }
+            else if (e) {
+                var charCode = e.which;
+            }
+            else { return true; }
+            if ((charCode > 64 && charCode < 91) || (charCode > 96 && charCode < 123) || (charCode==32))
+                return true;
+            else
+                alert("Please enter alphabets")
+                return false;
+        }
+        catch (err) {
+            alert(err.Description);
+        }
+    }
+
+    function onlyNumbers(e, t) {
+        try {
+            if (window.event) {
+                var intCode = window.event.keyCode;
+            }
+            else if (e) {
+                var intCode = e.which;
+            }
+            else { return true; }
+            if ((intCode >=48   && intCode <= 57)){
+                return true;
+            }
+
+            else{
+                alert("Please Enter Numeric Character")
+                return false;
+            }
+
+        }
+        catch (err) {
+            alert(err.Description);
+        }
+    }
+
+</script>
+
 <div class="ui form" style="margin: 0px auto;width:90%;">
-    <h2 style="text-align: center;font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif">Create Member</h2>
+   <h2 style="text-align: center;font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif">Create Member</h2>
 <div class="fieldcontain ${hasErrors(bean: memberInstance, field: 'fullName', 'error')} required">
       <h3 class="ui dividing header">Full Name <span class="required-indicator">*</span> </h3>
-    <g:textField name="fullName" required="" value="${memberInstance?.fullName}"/>
+    <g:textField name="fullName" id="fullName" onkeypress="return onlyAlphabets(event,this);" required="" value="${memberInstance?.fullName}"/>
 </div>
     <br>
 
@@ -11,7 +61,7 @@
 
     <h3 class="ui dividing header">User Id <span class="required-indicator">*</span> </h3>
 
-    <g:textField name="userId" required="" value="${memberInstance?.userId}"/>
+    <g:textField name="userId" required="" onkeypress="return onlyNumbers(event,this);" value="${memberInstance?.userId}"/>
 </div>
 <br>
 
@@ -19,7 +69,7 @@
 
     <h3 class="ui dividing header">Password <span class="required-indicator">*</span> </h3>
 
-    <g:textField name="password" required="" value="${memberInstance?.password}"/>
+    <g:passwordField name="password" required="" value="${memberInstance?.password}"/>
 </div>
 <br>
 
@@ -37,13 +87,13 @@
 
 <div class="fieldcontain ${hasErrors(bean: memberInstance, field: 'email', 'error')} ">
     <h3 class="ui dividing header">Email <span class="required-indicator">*</span> </h3>
-    <g:textField name="email" value="${memberInstance?.email}"/>
+    <g:textField name="email" id="email" value="${memberInstance?.email}"/>
 </div>
 <br>
 <div class="fieldcontain ${hasErrors(bean: memberInstance, field: 'contact', 'error')} ">
     <h3 class="ui dividing header">Contact <span class="required-indicator">*</span> </h3>
 
-    <g:textField name="contact" value="${memberInstance?.contact}"/>
+    <g:textField name="contact" onkeypress="return onlyNumbers(event,this);" value="${memberInstance?.contact}"/>
 </div>
 
 %{--<div class="fieldcontain ${hasErrors(bean: memberInstance, field: 'status', 'error')} ">--}%

@@ -56,7 +56,7 @@
 					
 						<td>${fieldValue(bean: bookInstance, field: "bookType")}</td>
 
-                        <div class="ui buttons">
+                        <td><div class="ui buttons">
                             <g:form url="[resource: bookInstance, action: 'delete']" method="DELETE">
                                 <g:link class="edit" action="edit" resource="${bookInstance}" style="color:#000000;">
                                     <button type="button" class="ui button">
@@ -71,7 +71,7 @@
                                     <g:message code="default.button.delete.label" default="Delete"/>
                                 </button>
                             </g:form>
-                        </div>
+                        </div></td>
 					</tr>
 				</g:each>
 				</tbody>

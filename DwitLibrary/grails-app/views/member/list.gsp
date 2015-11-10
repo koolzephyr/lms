@@ -3,6 +3,9 @@
 <html>
 <head>
     <meta name="layout" content="main_page">
+    <script src="${resource(dir: 'js', file: 'jquery-2.1.4.min.js')}"> </script>
+    <link rel="stylesheet" href="${resource(dir: 'css', file: 'datatable.min.css')}" />
+    <g:javascript src="datatable-min.js"/>
     <g:set var="entityName" value="${message(code: 'member.label', default: 'Member')}"/>
     <title><g:message code="default.list.label" args="[entityName]"/></title>
     <style>
@@ -10,10 +13,30 @@
         margin: 0px auto;
         width: 95%;
     }
+    .dataTables_filter {
+        display: none;
+    }
         </style>
+
+    <script>
+        function setValue(){
+            $("#userName").val('');
+        }
+        $(document).ready(function(){
+            setValue();
+            var table = $('#user_table').DataTable();
+
+            $('#userName').on( 'keyup', function () {
+                table
+                        .columns( 0 )
+                        .search( this.value )
+                        .draw();
+            } );
+        })
+    </script>
+
 </head>
 
-<body>
 <div id="wrapper">
 <div id="list-member" class="content scaffold-list" role="main">
     <br>
@@ -28,6 +51,7 @@
     </div>
 
     <table class="ui celled table">
+    <table class="ui celled table" id="user_table">
         <thead>
         <tr>
 

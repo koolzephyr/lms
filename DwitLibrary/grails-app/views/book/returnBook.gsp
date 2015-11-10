@@ -71,6 +71,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('#return').hide();
+            $("#reset").hide();
 
             $("#bookNumber").on("contextmenu",function(){
                 return false;
@@ -101,11 +102,15 @@
                 type: "post",
                 data: 'bookNumber=' + bookNumber,
                 success: function (result) {
-                        var res = result.split(":");
+                    console.log(result);
+                    var res = result.split(":");
 
-                        $("#fullName").val(res[0]);
-                        $("#fine").val(res[1]);
-                        $("#return").show();
+                    $("#fullName").val(res[0]);
+                    $("#fine").val(res[1]);
+                    $("#totalFineDays").val(res[2]);
+                    $("#totalKeptDays").val(res[3]);
+                    $("#reset").show();
+                    $("#return").show();
 
 
                 }
@@ -113,24 +118,93 @@
 
         }
 
-    function saveReturn() {
-        var bookNumber=$("#bookNumber").val();
-        var memberName=$("#fullName").val();
+        function saveReturn() {
+            var bookNumber=$("#bookNumber").val();
+            var memberName=$("#fullName").val();
+            var totalKeptDays=$("#totalKeptDays").val();
+            var totalFineDays=$("#totalFineDays").val();
+            var totalFineAmount=$("#fine").val();
 
-        $.ajax({
-            url:"${createLink(controller: "book",action: "saveReturn")}",
-            type:'post',
-            data:'bookNumber='+bookNumber+'&memberName='+memberName,
-            success: function(result) {
-                if(result="success") {
-                    $("#bookNumber").val("");
-                    $("#fullName").val();
-                    $("#fine").val();
-                    alert("Book returned.")
+            $.ajax({
+                url:"${createLink(controller: "book",action: "saveReturn")}",
+                type:'post',
+                data:'bookNumber='+bookNumber+'&memberName='+memberName+'&totalKeptdays='+totalKeptDays+'&totalFineDays='+totalFineDays+'&fine='+totalFineAmount,
+                success: function(result) {
+                    if(result="success") {
+                        $("#bookNumber").val("");
+                        $("#fullName").val("");
+                        $("#fine").val("");
+                        $("#totalKeptDays").val("");
+                        $("#totalFineDays").val("");
+
+                        alert("Book returned.")
+                    }
                 }
+            })
+        }
+
+        function changeFine() {
+            var days = $("#totalFineDays").val();
+            var memberName= $("#fullName").val();
+            var bookNumber = $("#bookNumber").val();
+
+            if(days.length>3) {
+                $('#totalFineDays').focus(function () {
+                    $(this).val('');
+                });
+                $("#fine").val('');
+                $('#return').attr("disabled","disabled");
+                alert("Fine days will be not be greater than 3 digit.");
+            }else if(isNaN(days)) {
+                $('#totalFineDays').focus(function () {
+                    $(this).val('');
+                });
+                $("#fine").val('');
+                $('#return').attr("disabled","disabled");
+                alert("invalid fine days.")
+            }else if(!(/^\d*$/.test(days))) {
+                $('#totalFineDays').focus(function () {
+                    $(this).val('');
+                });
+                $("#fine").val('');
+                $('#return').attr("disabled","disabled");
+                alert("invalid fine days.")
+            }else {
+                $.ajax({
+                    url:"${createLink(controller: "book",action: "recalculateFine")}",
+                    data:'days='+days+'&memberName='+memberName+'&bookNumber='+bookNumber,
+                    type:'post',
+                    success: function (result) {
+                        console.log(result);
+                        var res = result.split(":");
+
+                        $("#fullName").val(res[0]);
+                        $("#fine").val(res[1]);
+                        $("#totalFineDays").val(res[2]);
+                        $("#totalKeptDays").val(res[3]);
+                        $('#return').removeAttr("disabled","disabled");
+                        $("#return").show();
+
+
+                    }
+
+                })
             }
-        })
-    }
+
+        }
+
+        function reset() {
+            $("#bookNumber").val("");
+            $("#fullName").val("");
+            $("#return").hide();
+            $("#totalKeptDays").val("");
+            $("#totalFineDays").val("");
+            $("#totalFineDays").removeAttr("disabled","disabled");
+            $("#fine").val("");
+
+        }
+
+
 
 
 
@@ -146,8 +220,11 @@
 <body>
 Book Id: <input type="text" name="bookNumber" id="bookNumber" placeholder="Book Id" onkeyup="checkValid(this.value);"/><br/>
 Member name: <input type="text" name="fullName" id="fullName" placeholder="Member Name" readonly/><br/>
+Total kept Days: <input type ="text" name="totalKeptDays" id="totalKeptDays" readonly/>
 Fine: <input type="text" name="fine" id="fine"  readonly/><br/>
+Total fine Days: <input type ="text" name="totalFineDays" id="totalFineDays" onkeyup="changeFine();"/><br/>
 <input type="submit" value="return" id="return"  onclick="saveReturn();" /><br/>
+<input type="submit" value="Reset" id="reset" onclick="reset();"/>
 
 <r:layoutResources/>
 </body>

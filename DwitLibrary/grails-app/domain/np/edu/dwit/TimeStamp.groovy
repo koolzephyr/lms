@@ -2,13 +2,13 @@ package np.edu.dwit
 
 class TimeStamp {
 
-    Date deadline
-    Role role
+    String deadline
+    Borrow borrow
 
     static constraints = {
 
-        deadline min: new Date(), nullable: false
-        role nullable: false
+        deadline  nullable: false
+        borrow nullable: false
     }
 
     static mapping = {

@@ -4,7 +4,9 @@ class Member extends User {
     String email
     String contact
     String status  //Developers: Why status???????
-    String fullName
+    String firstName
+    String middleName
+    String lastName
     String userId
 
     static constraints = {
@@ -13,7 +15,9 @@ class Member extends User {
         email nullable: false, blank: false, email:true
         contact nullable: false, blank: false
         status nullable: true, blank: true
-        fullName nullable: false,blank: false
+        firstName nullable: false,blank: false
+        lastName nullable:false,blank:false
+        middleName nullable:true, blank:true
         userId nullable:false, blank:false, unique: true
 
     }

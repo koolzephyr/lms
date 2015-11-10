@@ -4,8 +4,10 @@ import constants.DWITLibraryConstants
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.transaction.Transactional
+import grails.validation.Validateable
 
 import java.sql.Timestamp
+import java.text.SimpleDateFormat
 
 import static org.springframework.http.HttpStatus.*
 
@@ -306,15 +308,101 @@ class BookController {
                 borrow.borrowedDate=new Timestamp(new Date().getTime())
                 borrow.returned=false
                 borrow.member=borrowingUser
+                println("borrow: "+borrow)
                 borrow.save(flush: true)
 
                 book.availableQuantity-=1
                 book.save(flush: true)
 
+                saveTimestamp(borrowingBook,borrowingUser)
+
                 render "issue"
             }
         }
     }
+
+    def saveTimestamp(BookInfo bookInfo,Member member) {
+        TimeStamp timeStamp = new TimeStamp()
+        def book = bookInfo.book
+        def borrow =Borrow.findByBookAndMemberAndReturned(book,member,false)
+        def role = borrow.member.getAuthorities()[0].toString()
+        println(role.equals("ROLE_STUDENT"))
+        def date = getBorrowedDate(borrow)
+        if(role.equals("ROLE_STUDENT")) {
+
+            if(borrow.book.bookType.equalsIgnoreCase("Borrowable")) {
+                def deadline = addDays(date, DWITLibraryConstants.COURSE_BOOK_BORROWABLE_STUDENT);
+                timeStamp.deadline = deadline;
+
+            }else if(borrow.book.bookType.equalsIgnoreCase("Novel")) {
+
+                def deadline = addDays(date, DWITLibraryConstants.NOVEL_BOOK_BORROWABLE);
+
+                timeStamp.deadline = deadline;
+            }
+
+
+
+        }else if(role.equals("ROLE_LIBRARIAN")) {
+            if(borrow.book.bookType.equalsIgnoreCase("Borrowable")) {
+                def deadline = addDays(date, DWITLibraryConstants.COURSE_BOOK_BORROWABLE_LIBRARIAN)
+
+                timeStamp.deadline = deadline
+            }else if(borrow.book.bookType.equalsIgnoreCase("Novel")) {
+                def deadline = addDays(date, DWITLibraryConstants.NOVEL_BOOK_BORROWABLE);
+
+                timeStamp.deadline = deadline;
+            }
+
+
+
+        }else if(role.equals("ROLE_ADMIN")) {
+            if(borrow.book.bookType.equalsIgnoreCase("Borrowable")) {
+                def deadline = addDays(date, DWITLibraryConstants.COURSE_BOOK_BORROWABLE_ADMIN)
+
+                timeStamp.deadline = deadline
+            }else if(borrow.book.bookType.equalsIgnoreCase("Novel")) {
+                def deadline = addDays(date, DWITLibraryConstants.NOVEL_BOOK_BORROWABLE);
+
+                timeStamp.deadline = deadline;
+            }
+
+
+        }else if(role.equals("ROLE_FACULTY")) {
+            if(borrow.book.bookType.equalsIgnoreCase("Borrowable")) {
+                def deadline = addDays(date, DWITLibraryConstants.COURSE_BOOK_BORROWABLE_FACULTY)
+
+                timeStamp.deadline = deadline
+            }else if(borrow.book.bookType.equalsIgnoreCase("Novel")) {
+                def deadline = addDays(date, DWITLibraryConstants.NOVEL_BOOK_BORROWABLE);
+
+                timeStamp.deadline = deadline;
+            }
+        }
+        timeStamp.borrow = borrow
+        timeStamp.save(flush: true)
+
+
+    }
+
+    def getBorrowedDate(Borrow borrow) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = format.parse(borrow.borrowedDate.toString());
+
+        return date
+    }
+
+
+
+    def addDays(Date date, int days) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, days);
+
+        return cal.getTime().format("yyyy-MM-dd")
+
+    }
+
     @Transactional
     def checkBorrowedMember(){
         def amount
@@ -349,6 +437,8 @@ class BookController {
         def totalBorrowedDays = borrowInfo[0].borrowedDate-new Date()
         render borrowedMember[0].member.fullName +":"+amount+":"+fine.days+":"+totalBorrowedDays
     }
+
+
     @Transactional
     def saveReturn() {
 
@@ -356,9 +446,6 @@ class BookController {
         def borrowedBook = BookInfo.findByBookNumber(params.bookNumber)
         def book = borrowedBook.book
         def borrow = Borrow.findByBookAndMemberAndReturned(book,borrowingUser,false)
-
-
-
 
         if(borrowingUser){
 

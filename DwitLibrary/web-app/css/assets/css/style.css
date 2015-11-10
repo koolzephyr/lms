@@ -28,6 +28,10 @@ a:hover {
 	color: #999;
 }
 
+td , th{
+    text-align: center !important;
+}
+
 /* ---------------------------------------------- /*
  * Transition elsements
 /* ---------------------------------------------- */
@@ -968,4 +972,6 @@ figure.effect-bubba:hover p {
 	}
 
 }
+
+
 

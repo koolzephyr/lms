@@ -182,9 +182,9 @@
     <input type="submit" value="Reset" id="reset" onclick="reset();"/>
 </form>
 <div class="ui center aligned segment" style="background-color: #3573A3;">
-        <g:link controller="member" action="index"><img style="float: left; height: 80px;width: 80px" src="${resource(dir: 'img', file: 'deerwalk.png')}" alt="Logo" ></g:link>
-<h1 style="color:white;float:left"><b>Library Management System</b></h1></img>
-<div style="float:right;color: white; font-style: oblique; font-size: 20px" class="item">
+        <g:link controller="member" action="index"><img style="float: left; height: 80px;width: 80px" src="${resource(dir: 'img', file: 'deerwalk.png')}" alt="Logo" />
+        <h1 style="color:white;float:left"><b>Library Management System</b></h1></g:link>
+        <div style="float:right;color: white; font-style: oblique; font-size: 20px" class="item">
     <form name="logout" method="POST" style="float: right;color: #E7746F" class="item" action="${createLink(controller:'logout') }">
         <em>
             <input type="submit" class="ui button" value="logout" style="color:#fff;background-color:rgba(255, 0, 0, 0.04)">
@@ -202,7 +202,7 @@
 
         <sec:ifAllGranted roles="ROLE_LIBRARIAN">
             <div class="ui simple link item">
-                <a href="#" id="pop"> Issue </a>
+                <a href="#" id="pop"> <i class="browser icon"></i> Issue </a>
             </div>
             <div class="ui simple link item">
                 <g:link controller="book" action="returnBook"> <i class="reply icon"></i> Return </g:link>

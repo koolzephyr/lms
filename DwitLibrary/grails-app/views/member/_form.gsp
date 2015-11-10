@@ -51,11 +51,20 @@
 
 <div class="ui form" style="margin: 0px auto;width:90%;">
    <h2 style="text-align: center;font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif">Create Member</h2>
-<div class="fieldcontain ${hasErrors(bean: memberInstance, field: 'fullName', 'error')} required">
-      <h3 class="ui dividing header">Full Name <span class="required-indicator">*</span> </h3>
-    <g:textField name="fullName" id="fullName" onkeypress="return onlyAlphabets(event,this);" required="" value="${memberInstance?.fullName}"/>
+<div class="fieldcontain ${hasErrors(bean: memberInstance, field: 'firstName', 'error')} required">
+<h3 class="ui dividing header">First Name <span class="required-indicator">*</span> </h3>
+<g:textField name="firstName" required="" onkeypress="return onlyAlphabets(event,this);" value="${memberInstance?.firstName}"/>
 </div>
-    <br>
+<br>
+<div class="fieldcontain ${hasErrors(bean: memberInstance, field: 'middleName', 'error')} ">
+    <h3 class="ui dividing header">Middle Name <span class="required-indicator"></span> </h3>
+    <g:textField name="middleName" onkeypress="return onlyAlphabets(event,this);" value="${memberInstance?.middleName}"/>
+</div>
+<br>
+<div class="fieldcontain ${hasErrors(bean: memberInstance, field: 'lastName', 'error')} required">
+    <h3 class="ui dividing header">Last Name <span class="required-indicator">*</span> </h3>
+    <g:textField name="lastName" required="" onkeypress="return onlyAlphabets(event,this);" value="${memberInstance?.lastName}"/>
+</div>
 
 <div class="fieldcontain ${hasErrors(bean: memberInstance, field: 'userId', 'error')} required">
 

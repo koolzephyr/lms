@@ -35,7 +35,8 @@
 						<g:sortableColumn property="totalQuantity" title="${message(code: 'book.totalQuantity.label', default: 'Total Quantity')}" />
 					
 						<g:sortableColumn property="bookType" title="${message(code: 'book.bookType.label', default: 'Book Type')}" />
-					
+
+                        <th style="color: #E7746F"> Action </th>
 					</tr>
 				</thead>
 				<tbody>
@@ -54,7 +55,23 @@
 						<td>${fieldValue(bean: bookInstance, field: "totalQuantity")}</td>
 					
 						<td>${fieldValue(bean: bookInstance, field: "bookType")}</td>
-					
+
+                        <div class="ui buttons">
+                            <g:form url="[resource: bookInstance, action: 'delete']" method="DELETE">
+                                <g:link class="edit" action="edit" resource="${bookInstance}" style="color:#000000;">
+                                    <button type="button" class="ui button">
+                                        <i class="edit icon"> </i>
+                                        <g:message code="default.button.edit.label" default="Edit"/>
+                                    </button>
+                                </g:link>
+                                <div class="or"></div>
+
+                                <button type="submit" class="ui button" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">
+                                    <i class="delete icon"> </i>
+                                    <g:message code="default.button.delete.label" default="Delete"/>
+                                </button>
+                            </g:form>
+                        </div>
 					</tr>
 				</g:each>
 				</tbody>

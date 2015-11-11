@@ -6,6 +6,35 @@
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'bookInfo.label', default: 'BookInfo')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
+        <script src="${resource(dir: 'js', file: 'jquery-2.1.4.min.js')}"> </script>
+        <link rel="stylesheet" href="${resource(dir: 'css', file: 'datatable.min.css')}" />
+        <g:javascript src="datatable-min.js"/>
+        <style>
+        .dataTables_filter {
+            display: none;
+        }
+        #wrapper1{
+            margin: 0px auto;
+            width: 95%;
+        }
+
+        </style>
+        <script>
+            function setValue(){
+                $("#bookNumber").val('');
+            }
+            $(document).ready(function(){
+                setValue();
+                var table = $('#book_info_table').DataTable();
+
+                $('#bookNumber').on( 'keyup', function () {
+                    table
+                            .columns( 1 )
+                            .search( this.value )
+                            .draw();
+                } );
+            })
+        </script>
 	</head>
 	<body>
 		<a href="#list-bookInfo" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -20,7 +49,9 @@
 			<g:if test="${flash.message}">
 				<div class="message" role="status">${flash.message}</div>
 			</g:if>
-			<table>
+            Book Number: <g:textField name="bookNumber" id="bookNumber"/>
+
+            <table class="ui celled table" id="book_info_table">
 			<thead>
 					<tr>
 					

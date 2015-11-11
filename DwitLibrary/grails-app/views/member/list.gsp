@@ -28,7 +28,7 @@
 
             $('#userName').on( 'keyup', function () {
                 table
-                        .columns( 0 )
+                        .columns( 2 )
                         .search( this.value )
                         .draw();
             } );
@@ -47,10 +47,12 @@
     <div class="ui compact menu">
         <div class="active item">
             <g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]"/></g:link>
+
         </div>
     </div>
 
-    <table class="ui celled table">
+    User Name: <g:textField name="userName" id="userName"/>
+
     <table class="ui celled table" id="user_table">
         <thead>
         <tr>
@@ -77,7 +79,7 @@
         <g:each in="${memberInstanceList}" status="i" var="memberInstance">
             <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 
-                <td>${fieldValue(bean: memberInstance, field: "fullName")}</td>
+                <td>Sushant Gyryg</td>
 
                 <td>${fieldValue(bean: memberInstance, field: "userId")}</td>
 
